@@ -6,8 +6,6 @@ export class Bot {
     client.on("message", (message: Message) => {
       console.log(message.content);
     });
-    return client.login(
-      "ODU3MjM2OTUzNjE1Njk1OTAy.YNMqIA.Ekd8QJyR5QvgXF9EGf834CBxI20"
-    );
+    return client.login(process.env.TOKEN);
   }
 }
