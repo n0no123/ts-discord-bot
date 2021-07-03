@@ -5,11 +5,4 @@ import { Bot } from "./bot";
 
 const bot = new Bot();
 
-bot
-  .listen()
-  .then(() => {
-    console.log("Logged in!");
-  })
-  .catch((error) => {
-    console.log("Oh no! ", error);
-  });
+bot.listen();

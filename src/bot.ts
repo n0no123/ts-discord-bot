@@ -1,10 +1,18 @@
-import { Client, Message } from "discord.js";
+import Discord from "discord.js";
+const client = new Discord.Client();
+
+client.once("ready", () => {
+  console.log("Logged In!");
+});
 
 export class Bot {
   public listen(): Promise<string> {
-    const client = new Client();
-    client.on("message", (message: Message) => {
+    client.on("message", (message: Discord.Message) => {
       console.log(message.content);
+    });
+    client.on("message", (message) => {
+      if (message.content === "!ping") message.channel.send("pong");
+      else if (message.content === "!nyeh") message.channel.send("nyeh?");
     });
     return client.login(process.env.TOKEN);
   }
