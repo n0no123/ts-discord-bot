@@ -12,7 +12,8 @@ export class Bot {
     });
     client.on("message", (message) => {
       if (message.content === "!ping") message.channel.send("pong");
-      else if (message.content === "!nyeh") message.channel.send("nyeh?");
+      if (message.content === "!nyeh") message.channel.send("nyeh?");
+      if (message.content === "!quack") message.channel.send("quack", {tts: true});
     });
     return client.login(process.env.TOKEN);
   }
