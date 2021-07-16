@@ -1,5 +1,3 @@
-import { Message } from "discord.js";
-
 import fetch from "node-fetch";
 
 const paris =
@@ -8,10 +6,7 @@ const paris =
   "&units=metric";
 
 export class Weather {
-  static execute(message: Message): void {
-    message.channel.send("weather");
-  }
-  static async test(): Promise<string> {
+  static async execute(): Promise<string> {
     return (await fetch(paris)).json();
   }
 }

@@ -30,7 +30,7 @@ export class Bot {
           break;
         }
         case "!weather": {
-          console.log(JSON.parse(await Weather.test()));
+          message.channel.send(JSON.parse(JSON.stringify(await Weather.execute())).main.temp);
           break;
         }
       }
