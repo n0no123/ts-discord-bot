@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/n0no123/ts-discord-bot#readme",
   "devDependencies": {
+    "@types/cron": "^1.7.3",
     "@types/node": "^16.0.0",
     "@types/node-fetch": "^2.5.11",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
@@ -30,6 +31,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "cron": "^1.8.2",
     "dotenv": "^10.0.0"
   }
 }

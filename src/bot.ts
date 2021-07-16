@@ -1,8 +1,6 @@
 import Discord from "discord.js";
-import { Nyeh } from "./commands/nyeh";
-import { Ping } from "./commands/ping";
-import { Quack } from "./commands/quack";
 import { Weather } from "./commands/weather";
+import { CronJob } from "cron";
 
 const client = new Discord.Client();
 
@@ -11,26 +9,40 @@ client.once("ready", () => {
 });
 
 export class Bot {
+  cronJob: CronJob;
+  constructor() {
+    this.cronJob = new CronJob("30 7 * * *", async () => {
+      try {
+        await this.weather();
+      } catch (e) {
+        console.error(e);
+      }
+    });
+    if (!this.cronJob.running) {
+      this.cronJob.start();
+    }
+  }
+
+  private async weather(): Promise<void> {
+    const channel = client.channels.cache.get(
+      "857235937032536107"
+    ) as Discord.TextChannel;
+    if (channel !== undefined)
+      channel.send(
+        JSON.parse(JSON.stringify(await Weather.execute())).main.temp + "°C"
+      );
+  }
+
   public listen(): Promise<string> {
     client.on("message", (message: Discord.Message) => {
-      console.log(message.content);
+      console.log(message.channel.id);
     });
     client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
-        case "!nyeh": {
-          Nyeh.execute(message);
-          break;
-        }
-        case "!ping": {
-          Ping.execute(message);
-          break;
-        }
-        case "!quack": {
-          Quack.execute(message);
-          break;
-        }
         case "!weather": {
-          message.channel.send(JSON.parse(JSON.stringify(await Weather.execute())).main.temp);
+          message.channel.send(
+            JSON.parse(JSON.stringify(await Weather.execute())).main.temp + "°C"
+          );
           break;
         }
       }
