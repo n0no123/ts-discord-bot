@@ -1,6 +1,6 @@
 import Discord from "discord.js";
-import { Weather } from "./commands/weather";
 import { CronJob } from "cron";
+import { Weather } from "./commands/weather";
 
 const client = new Discord.Client();
 
@@ -10,7 +10,10 @@ client.once("ready", () => {
 
 export class Bot {
   cronJob: CronJob;
+  weatherId: string | undefined;
+
   constructor() {
+    this.weatherId = undefined;
     this.cronJob = new CronJob("30 7 * * *", async () => {
       try {
         await this.weather();
@@ -24,9 +27,10 @@ export class Bot {
   }
 
   private async weather(): Promise<void> {
-    Weather.execute(
-      client.channels.cache.get("857235937032536107") as Discord.TextChannel
-    );
+    if (this.weatherId !== undefined)
+      Weather.execute(
+        client.channels.cache.get(this.weatherId) as Discord.TextChannel
+      );
   }
 
   public listen(): Promise<string> {
@@ -37,6 +41,10 @@ export class Bot {
       switch (message.content) {
         case "!weather": {
           Weather.execute(message.channel as Discord.TextChannel);
+          break;
+        }
+        case "!weather --setup": {
+          this.weatherId = message.channel.id;
           break;
         }
       }

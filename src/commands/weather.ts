@@ -1,5 +1,5 @@
-import { TextChannel } from "discord.js";
 import fetch from "node-fetch";
+import { TextChannel } from "discord.js";
 
 const paris =
   "https://api.openweathermap.org/data/2.5/weather?q=Paris&appid=" +
