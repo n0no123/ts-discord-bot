@@ -24,13 +24,9 @@ export class Bot {
   }
 
   private async weather(): Promise<void> {
-    const channel = client.channels.cache.get(
-      "857235937032536107"
-    ) as Discord.TextChannel;
-    if (channel !== undefined)
-      channel.send(
-        JSON.parse(JSON.stringify(await Weather.execute())).main.temp + "°C"
-      );
+    Weather.execute(
+      client.channels.cache.get("857235937032536107") as Discord.TextChannel
+    );
   }
 
   public listen(): Promise<string> {
@@ -40,9 +36,7 @@ export class Bot {
     client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
         case "!weather": {
-          message.channel.send(
-            JSON.parse(JSON.stringify(await Weather.execute())).main.temp + "°C"
-          );
+          Weather.execute(message.channel as Discord.TextChannel);
           break;
         }
       }
