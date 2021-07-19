@@ -34,18 +34,21 @@ export class Bot {
   }
 
   public listen(): Promise<string> {
-    client.on("message", (message: Discord.Message) => {
-      console.log(message.channel.id);
-    });
     client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
         case "!weather": {
           Weather.execute(message.channel as Discord.TextChannel);
           break;
         }
-        case "!weather --setup": {
+        case "!weather --setChannel": {
           this.weatherId = message.channel.id;
           break;
+        }
+        case "!weather --setLocation": {
+          message.channel.send("Please enter a location:");
+          client.on("message", async (message: Discord.Message) => {
+            Weather.setLocation(message.content);
+          });
         }
       }
     });
