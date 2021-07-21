@@ -40,13 +40,6 @@ export class Bot {
           this.jobChannelId = message.channel.id;
           break;
         }
-        case "!hourly": {
-          this.weather.hourly(
-            message.channel as Discord.TextChannel,
-            message.createdAt.getHours()
-          );
-          break;
-        }
         case "!setLocation": {
           const filter = (m: { author: { id: string } }) =>
             m.author.id === message.author.id;
@@ -67,6 +60,18 @@ export class Bot {
                 message.channel.send("(Error) !setLocation: Timeout.");
               });
           });
+          break;
+        }
+        case "!hourly": {
+          this.weather.hourly(
+            message.channel as Discord.TextChannel,
+            message.createdAt.getHours()
+          );
+          break;
+        }
+        case "!location": {
+          this.weather.getLocation(message.channel as Discord.TextChannel);
+          break;
         }
       }
     });

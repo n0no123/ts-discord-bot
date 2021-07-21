@@ -11,12 +11,19 @@ export class Weather {
   constructor() {
     this.data = JSON.parse(JSON.stringify(city));
   }
+  public getLocation(channel: TextChannel): void {
+    if (this?.location) channel.send("Current Location: " + this.location.name);
+    else
+      channel.send(
+        "Current Location: None. You can select a location using the '!setLocation' command."
+      );
+  }
   public setLocation(
     city: string | undefined,
     channel: TextChannel | undefined
   ): void {
     if (city === undefined || channel === undefined) return;
-    this.location = this.getLocationFromData(city);
+    this.location = this.getLocationFromCityName(city);
     if (this.location === undefined)
       channel.send("(Error) !setLocation: Unknown Location.");
     else channel.send("Location correctly set to: " + this.location.name);
@@ -51,7 +58,7 @@ export class Weather {
     });
     return;
   }
-  private getLocationFromData(city: string): CityData | undefined {
+  private getLocationFromCityName(city: string): CityData | undefined {
     for (const entry in this.data)
       if (this.data[entry].name === city) return this.data[entry];
     return;
