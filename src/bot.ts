@@ -11,7 +11,7 @@ export class Bot {
   constructor() {
     this.client = new Discord.Client();
     this.weather = new Weather();
-    this.jobChannelId = undefined;
+    this.jobChannelId;
     this.cronJob = new CronJob("30 7 * * *", async () => {
       await this.daily();
     });
@@ -25,27 +25,26 @@ export class Bot {
 
   private async daily(): Promise<void> {
     if (this.jobChannelId !== undefined)
-      this.weather.execute(
-        this.client.channels.cache.get(this.jobChannelId) as Discord.TextChannel
+      this.weather.hourly(
+        this.client.channels.cache.get(
+          this.jobChannelId
+        ) as Discord.TextChannel,
+        7.3
       );
   }
 
   public listen(): Promise<string> {
     this.client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
-        case "!oneCall": {
-          this.weather.oneCall(
+        case "!setChannel": {
+          this.jobChannelId = message.channel.id;
+          break;
+        }
+        case "!hourly": {
+          this.weather.hourly(
             message.channel as Discord.TextChannel,
             message.createdAt.getHours()
           );
-          break;
-        }
-        case "!weather": {
-          this.weather.execute(message.channel as Discord.TextChannel);
-          break;
-        }
-        case "!setChannel": {
-          this.jobChannelId = message.channel.id;
           break;
         }
         case "!setLocation": {
