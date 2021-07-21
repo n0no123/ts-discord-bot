@@ -33,6 +33,13 @@ export class Bot {
   public listen(): Promise<string> {
     this.client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
+        case "!oneCall": {
+          this.weather.oneCall(
+            message.channel as Discord.TextChannel,
+            message.createdAt.getHours()
+          );
+          break;
+        }
         case "!weather": {
           this.weather.execute(message.channel as Discord.TextChannel);
           break;
