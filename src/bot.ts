@@ -2,56 +2,68 @@ import Discord from "discord.js";
 import { CronJob } from "cron";
 import { Weather } from "./commands/weather";
 
-const client = new Discord.Client();
-
-client.once("ready", () => {
-  console.log("Logged In!");
-});
-
 export class Bot {
+  client: Discord.Client;
+  weather: Weather;
+  jobChannelId: string | undefined;
   cronJob: CronJob;
-  weatherId: string | undefined;
 
   constructor() {
-    this.weatherId = undefined;
+    this.client = new Discord.Client();
+    this.weather = new Weather();
+    this.jobChannelId = undefined;
     this.cronJob = new CronJob("30 7 * * *", async () => {
-      try {
-        await this.weather();
-      } catch (e) {
-        console.error(e);
-      }
+      await this.daily();
     });
     if (!this.cronJob.running) {
       this.cronJob.start();
     }
+    this.client.once("ready", () => {
+      console.log("Logged In!");
+    });
   }
 
-  private async weather(): Promise<void> {
-    if (this.weatherId !== undefined)
-      Weather.execute(
-        client.channels.cache.get(this.weatherId) as Discord.TextChannel
+  private async daily(): Promise<void> {
+    if (this.jobChannelId !== undefined)
+      this.weather.execute(
+        this.client.channels.cache.get(this.jobChannelId) as Discord.TextChannel
       );
   }
 
   public listen(): Promise<string> {
-    client.on("message", async (message: Discord.Message) => {
+    this.client.on("message", async (message: Discord.Message) => {
       switch (message.content) {
         case "!weather": {
-          Weather.execute(message.channel as Discord.TextChannel);
+          this.weather.execute(message.channel as Discord.TextChannel);
           break;
         }
-        case "!weather --setChannel": {
-          this.weatherId = message.channel.id;
+        case "!setChannel": {
+          this.jobChannelId = message.channel.id;
           break;
         }
-        case "!weather --setLocation": {
-          message.channel.send("Please enter a location:");
-          client.on("message", async (message: Discord.Message) => {
-            Weather.setLocation(message.content);
+        case "!setLocation": {
+          const filter = (m: { author: { id: string } }) =>
+            m.author.id === message.author.id;
+          message.channel.send("Please enter a location:").then(() => {
+            message.channel
+              .awaitMessages(filter, {
+                max: 1,
+                time: 30000,
+                errors: ["time"],
+              })
+              .then((message) => {
+                this.weather.setLocation(
+                  message?.first()?.content,
+                  message?.first()?.channel as Discord.TextChannel
+                );
+              })
+              .catch(() => {
+                message.channel.send("(Error) !setLocation: Timeout.");
+              });
           });
         }
       }
     });
-    return client.login(process.env.BOT_TOKEN);
+    return this.client.login(process.env.BOT_TOKEN);
   }
 }
