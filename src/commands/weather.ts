@@ -40,12 +40,16 @@ export class Weather {
     );
     const request = `https://api.openweathermap.org/data/2.5/onecall?lat=${this.location?.coord.lat}&lon=${this.location?.coord.lon}&exclude=current,minutely,daily,alerts&units=metric&appid=${process.env.OPEN_WEATHER}`;
     (await fetch(request)).json().then((data) => {
-      for (let it = hour; it < hour + 8; it++)
+      for (let it = hour; it < hour + 8; it += 2)
         channel.send(
           `${it < 12 ? (it === 0 ? 12 : it) : it === 12 ? 12 : it - 12} ${
             it < 12 ? "a.m." : "p.m."
           } -> ${data.hourly[it].temp}°C (${
             data.hourly[it].weather[0].description
+          })\n${it + 1 < 12 ? it + 1 : it + 1 === 12 ? 12 : it + 1 - 12} ${
+            it + 1 < 12 ? "a.m." : "p.m."
+          } -> ${data.hourly[it + 1].temp}°C (${
+            data.hourly[it + 1].weather[0].description
           })`
         );
     });
