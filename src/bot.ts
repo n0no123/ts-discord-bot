@@ -70,7 +70,9 @@ export class Bot {
           break;
         }
         case "!location": {
-          this.weather.getLocation(message.channel as Discord.TextChannel);
+          this.weather.getCurrentLocation(
+            message.channel as Discord.TextChannel
+          );
           break;
         }
       }
