@@ -21,17 +21,13 @@ export class Weather {
   public getCurrentLocation(channel: TextChannel): void {
     channel.send("Current Location: " + this?.location?.name);
   }
-  public setLocation(
-    city: string | undefined,
-    channel: TextChannel | undefined
-  ): void {
-    if (city === undefined || channel === undefined) return;
+  public setLocation(channel: TextChannel, city: string): void {
     const location = this.getLocationFromCityName(city);
     if (location === undefined)
-      channel.send("(Error) !setLocation: Unknown Location.");
+      channel.send(`(Error) !setLocation '${city}': Unknown Location.`);
     else {
       this.location = location;
-      channel.send("Location correctly set to: " + this.location.name);
+      channel.send(`Location correctly set to: ${city}`);
     }
   }
   public async hourly(channel: TextChannel, hour: number): Promise<void> {

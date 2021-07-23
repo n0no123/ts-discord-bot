@@ -35,31 +35,19 @@ export class Bot {
 
   public listen(): Promise<string> {
     this.client.on("message", async (message: Discord.Message) => {
-      switch (message.content) {
+      const content = message.content.split(" ");
+      switch (content[0]) {
         case "!setChannel": {
-          this.jobChannelId = message.channel.id;
+          if (content.length !== 1)
+            message.channel.send("(Error) !setChannel: Invalid Argument.");
+          else this.jobChannelId = message.channel.id;
           break;
         }
         case "!setLocation": {
-          const filter = (m: { author: { id: string } }) =>
-            m.author.id === message.author.id;
-          message.channel.send("Please enter a location:").then(() => {
-            message.channel
-              .awaitMessages(filter, {
-                max: 1,
-                time: 30000,
-                errors: ["time"],
-              })
-              .then((message) => {
-                this.weather.setLocation(
-                  message?.first()?.content,
-                  message?.first()?.channel as Discord.TextChannel
-                );
-              })
-              .catch(() => {
-                message.channel.send("(Error) !setLocation: Timeout.");
-              });
-          });
+          this.weather.setLocation(
+            message.channel as Discord.TextChannel,
+            content.slice(1).join(" ")
+          );
           break;
         }
         case "!hourly": {
